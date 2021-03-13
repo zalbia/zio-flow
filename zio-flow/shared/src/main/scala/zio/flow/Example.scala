@@ -162,32 +162,7 @@ object UberEatsExample {
   lazy val assignRider: Activity[(User, Address), Throwable, Rider]                          = ???
   lazy val getRiderState: Activity[(User, Address), Throwable, RiderState]                   = ???
 
-  lazy val processOrderWorkflow: ZFlow[(User, Address, Restaurant, Order), Throwable, (User, Address)] = {
-    implicit def schemaOrderStateWaiting: Schema[OrderState] = ???
-
-    implicit val sortableOrderState: Sortable[OrderState] = ???
-
-    def updateOrderState(
-      user: Expr[User],
-      restaurant: Expr[Restaurant],
-      order: Expr[Order]
-    ): ZFlow[Any, Throwable, OrderState] =
-      ZFlow(OrderState.Waiting: OrderState).iterate((orderState: Expr[OrderState]) =>
-        for {
-          currOrderState <- getOrderState(user, restaurant, order)
-          _              <- ZFlow.ifThenElse(currOrderState !== orderState)(
-                              pushOrderStatusNotification(user, restaurant, order),
-                              ZFlow.unit
-                            )
-          _              <- ZFlow.sleep(Expr.ofMinutes(2L))
-        } yield currOrderState
-      )(_ !== (OrderState.FoodPacked: OrderState))
-
-    for {
-      tuple4 <- ZFlow.input[(User, Address, Restaurant, Order)]
-      _      <- updateOrderState(tuple4._1, tuple4._3, tuple4._4)
-    } yield (tuple4._1, tuple4._2)
-  }
+  lazy val processOrderWorkflow: ZFlow[(User, Address, Restaurant, Order), Throwable, (User, Address)] = ???
 
   def riderWorkflow(tuple2: Expr[(User, Address)]): ZFlow[Any, Throwable, Any] = {
     implicit def schemaRiderState: Schema[RiderState] = ???

@@ -68,8 +68,8 @@ object Schema {
 }
 
 /**
- * A `Remote[A]` is a blueprint for constructing a value of type `A` on a 
- * remote machine. Remote values can always be serialized, because they are 
+ * A `Remote[A]` is a blueprint for constructing a value of type `A` on a
+ * remote machine. Remote values can always be serialized, because they are
  * mere blueprints, and they do not contain any Scala code.
  */
 sealed trait Expr[+A]
