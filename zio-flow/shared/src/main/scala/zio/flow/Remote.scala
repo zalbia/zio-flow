@@ -31,7 +31,7 @@ object Schema {
 
   implicit def shortSchema: Schema[Short] = ???
 
-  implicit def intSchema: Schema[Int] = ???
+  implicit def intSchema: Schema[Int] = Schema.fail("")
 
   implicit def longSchema: Schema[Long] = ???
 
@@ -43,7 +43,7 @@ object Schema {
 
   implicit def bigDecimalSchema: Schema[BigDecimal] = ???
 
-  implicit def unitSchema: Schema[Unit] = ???
+  implicit def unitSchema: Schema[Unit] = Schema.fail("Unit Schema not found.")
 
   implicit def boolSchema: Schema[Boolean] = ???
 
