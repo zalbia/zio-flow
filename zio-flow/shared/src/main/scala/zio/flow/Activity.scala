@@ -24,7 +24,6 @@ final case class Activity[-R, A](
 
   final def narrow[R0](implicit ev: R0 <:< R): Activity[R0, A] = {
     val _ = ev
-
     self.asInstanceOf[Activity[R0, A]]
   }
 }
