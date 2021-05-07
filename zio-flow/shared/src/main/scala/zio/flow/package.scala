@@ -1,7 +1,8 @@
 package zio
 
-import java.time._
+import zio.schema._
 
+import java.time._
 import scala.language.implicitConversions
 
 package object flow {
@@ -13,6 +14,12 @@ package object flow {
   type RemoteDuration    = Remote[Duration]
   type RemoteInstant     = Remote[Instant]
   type RemoteVariable[A] = Remote[Variable[A]]
+
+  type SchemaOption[A] = Schema.Optional[A]
+  type SchemaList[A] = Schema[List[A]]
+
+  implicit val durationSchema : Schema[Duration] = ???
+  implicit val instantSchema : Schema[Instant] = ???
 
   implicit def RemoteVariable[A](remote: Remote[Variable[A]]): RemoteVariableSyntax[A] = new RemoteVariableSyntax(
     remote

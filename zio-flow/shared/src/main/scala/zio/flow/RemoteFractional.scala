@@ -1,4 +1,5 @@
 package zio.flow
+import zio.schema._
 
 trait RemoteFractional[+A] {
 

@@ -6,6 +6,7 @@ import zio.console._
 import zio.flow.PolicyRenewalExample.{ Email, Policy, PolicyId, PropertyAddress }
 import zio.flow.ZFlow.Input
 import zio.flow.ZFlowExecutor.InMemory
+import zio.schema._
 import zio.{ App, ExitCode, Has, IO, Task, UIO, URIO, ZIO }
 
 object HelloWorld extends App {

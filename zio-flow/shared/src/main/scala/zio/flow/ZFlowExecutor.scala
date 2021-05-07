@@ -1,6 +1,7 @@
 package zio.flow
 
 import java.time.Duration
+import zio.schema._
 
 import zio._
 import zio.clock.Clock

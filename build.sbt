@@ -35,14 +35,16 @@ lazy val root = project
   )
   .aggregate(
     zioFlowJVM,
-    zioFlowJS
+    zioFlowJS,
+    zioSchemaJVM,
+    zioSchemaJS
   )
 
 lazy val zioFlow = crossProject(JSPlatform, JVMPlatform)
   .in(file("zio-flow"))
   .settings(stdSettings("zio-flow"))
   .settings(crossProjectSettings)
-  .settings(buildInfoSettings("zio.flow"))
+//  .settings(buildInfoSettings("zio.flow"))
   .settings(
     libraryDependencies ++= Seq(
       "dev.zio" %% "zio"          % zioVersion,
@@ -52,11 +54,16 @@ lazy val zioFlow = crossProject(JSPlatform, JVMPlatform)
   )
   .settings(testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"))
 
+lazy val zioSchemaJVM = ProjectRef(uri("git://github.com/zio/zio-schema#main"), "zioSchemaJVM")
+lazy val zioSchemaJS  = ProjectRef(uri("git://github.com/zio/zio-schema#main"), "zioSchemaJS")
+
 lazy val zioFlowJS = zioFlow.js
   .settings(scalaJSUseMainModuleInitializer := true)
+  .dependsOn(zioSchemaJS)
 
 lazy val zioFlowJVM = zioFlow.jvm
   .settings(dottySettings)
+  .dependsOn(zioSchemaJVM)
 
 lazy val docs = project
   .in(file("zio-flow-docs"))

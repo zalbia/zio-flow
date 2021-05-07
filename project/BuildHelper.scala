@@ -3,9 +3,9 @@ import Keys._
 import explicitdeps.ExplicitDepsPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
-import sbtbuildinfo._
+//import sbtbuildinfo._
 import dotty.tools.sbtplugin.DottyPlugin.autoImport._
-import BuildInfoKeys._
+//import BuildInfoKeys._
 import scalafix.sbt.ScalafixPlugin.autoImport._
 
 object BuildHelper {
@@ -48,11 +48,11 @@ object BuildHelper {
       )
     else Nil
 
-  def buildInfoSettings(packageName: String) =
-    Seq(
-      buildInfoKeys := Seq[BuildInfoKey](organization, moduleName, name, version, scalaVersion, sbtVersion, isSnapshot),
-      buildInfoPackage := packageName
-    )
+//  def buildInfoSettings(packageName: String) =
+//    Seq(
+//      buildInfoKeys := Seq[BuildInfoKey](organization, moduleName, name, version, scalaVersion, sbtVersion, isSnapshot),
+//      buildInfoPackage := packageName
+//    )
 
   val dottySettings = Seq(
     crossScalaVersions += ScalaDotty,

@@ -1,5 +1,7 @@
 package zio.flow
 
+import zio.schema.Schema
+
 import java.time.Period
 
 /**
@@ -152,6 +154,7 @@ object PolicyRenewalExample {
       } yield loop
     }
 
+  //implicit val schemaBuyer : Schema[Buyer] = ???
   lazy val paymentFlow: ZFlow[Buyer, ActivityError, Boolean] =
     ZFlow.newVar("payment-successful", false).flatMap { paymentSuccessful =>
       ZFlow.doWhile {
