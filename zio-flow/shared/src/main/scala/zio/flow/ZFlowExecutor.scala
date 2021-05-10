@@ -1,10 +1,10 @@
 package zio.flow
 
 import java.time.Duration
-import zio.schema._
 
 import zio._
 import zio.clock.Clock
+import zio.schema._
 
 trait ZFlowExecutor[-U] {
   def submit[E, A](uniqueId: U, flow: ZFlow[Any, E, A]): IO[E, A]

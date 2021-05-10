@@ -3,18 +3,15 @@ package zio.flow
 import java.net.URI
 
 import zio.console._
-import zio.flow.PolicyRenewalExample.{ Email, Policy, PolicyId, PropertyAddress }
 import zio.flow.ZFlow.Input
 import zio.flow.ZFlowExecutor.InMemory
 import zio.schema._
-import zio.{ App, ExitCode, Has, IO, Task, UIO, URIO, ZIO }
+import zio.{ App, ExitCode, Has, IO, URIO, ZIO }
 
 object HelloWorld extends App {
 
   override def run(args: List[String]): URIO[Console, ExitCode] =
     executeZFlow.exitCode
-
-  case class Policy(id: PolicyId, address: PropertyAddress, userEmail: Email, evaluatorEmail: Email)
 
   val opEx: OperationExecutor[Console] = new OperationExecutor[Console] {
 
@@ -26,30 +23,36 @@ object HelloWorld extends App {
       }
   }
 
-  val exampleZFlow: ZFlow[Any, ActivityError, String] = for {
-    s       <- policyClaimStatus("Test String")
+  val testPolicy: PolicyEx = PolicyEx("abcd", "efgh", "akjhd")
+
+  val exampleZFlow: ZFlow[Any, ActivityError, Boolean] = for {
+    s       <- policyClaimStatus(testPolicy)
     exZFlow <- ZFlow.succeed(s)
   } yield exZFlow
 
-  def policyClaimStatus: Activity[String, String] =
-    Activity[String, String](
+  case class PolicyEx(id: String, userEmail: String, evaluatorEmail: String)
+  implicit val policySchema: Schema[PolicyEx] = DeriveSchema.gen[PolicyEx]
+
+  def policyClaimStatus: Activity[PolicyEx, Boolean] =
+    Activity[PolicyEx, Boolean](
       "get-policy-claim-status",
       "Returns whether or not claim was made on a policy for a certain year",
-      Operation.Http[String, String](
+      Operation.Http[PolicyEx, Boolean](
         URI.create("http://www.checkPolicyClaim.com"),
         "GET",
         Map.empty[String, String],
-        implicitly[Schema[String]],
-        implicitly[Schema[String]]
+        implicitly[Schema[PolicyEx]],
+        implicitly[Schema[Boolean]]
       ),
       exampleCheckZFlow,
       exampleCompensateZflow
     )
 
-  def exampleCheckZFlow: ZFlow[String, ActivityError, String]   = Input[String](implicitly[Schema[String]])
-  val exampleCompensateZflow: ZFlow[String, ActivityError, Any] = Input[String](implicitly[Schema[String]])
+  def exampleCheckZFlow: ZFlow[PolicyEx, ActivityError, Boolean] =
+    Input[PolicyEx](implicitly[Schema[PolicyEx]]).as(Remote(true))
+  val exampleCompensateZflow: ZFlow[Boolean, ActivityError, Any] = Input[Boolean](implicitly[Schema[Boolean]])
 
-  val executeZFlow: IO[ActivityError, String] =
+  val executeZFlow: IO[ActivityError, Boolean] =
     InMemory(Has(zio.clock.Clock.Service.live) ++ Has(zio.console.Console.Service.live), opEx)
       .submit("Unique", exampleZFlow)
   //.flatMap(x => putStrLn(x.toString))

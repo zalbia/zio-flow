@@ -1,10 +1,11 @@
 package zio.flow
 
-import zio.schema.Schema.EitherSchema
+import java.time.temporal.{ ChronoUnit, TemporalUnit }
+import java.time.{ Duration, Instant, Period }
 
-import java.time.temporal.{ChronoUnit, TemporalUnit}
-import java.time.{Duration, Instant, Period}
 import scala.language.implicitConversions
+
+import zio.schema.Schema.EitherSchema
 import zio.schema._
 
 //import zio.flow.Schema.{ SchemaEither, SchemaList, SchemaOption, SchemaTuple2 }
@@ -585,7 +586,7 @@ object Remote {
                   toTupleSchema(
                     schemaAndValue.schema.asInstanceOf[SchemaList[A]] match {
                       case Schema.Sequence(schemaA, _, _) => schemaA
-                      case _ =>throw new IllegalStateException("Illegal state.")
+                      case _                              => throw new IllegalStateException("Illegal state.")
                     },
                     schemaAndValue.schema.asInstanceOf[SchemaList[A]]
                   )
@@ -595,10 +596,15 @@ object Remote {
             case None    =>
               val schema = schemaAndValue.schema.asInstanceOf[SchemaList[A]]
               SchemaAndValue(
-                toOptionSchema(toTupleSchema(schema match {
-                  case Schema.Sequence(schemaA, _, _) => schemaA
-                  case _ => throw new IllegalStateException("Illegal state exception.")
-                }, schemaAndValue.schema)),
+                toOptionSchema(
+                  toTupleSchema(
+                    schema match {
+                      case Schema.Sequence(schemaA, _, _) => schemaA
+                      case _                              => throw new IllegalStateException("Illegal state exception.")
+                    },
+                    schemaAndValue.schema
+                  )
+                ),
                 None
               )
             case _       => throw new IllegalStateException("Every remote UnCons must be constructed using Remote[List].")
