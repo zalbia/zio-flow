@@ -108,7 +108,7 @@ object ZFlowExecutor {
       ref: Ref[State],
       input: I,
       flow: ZFlow[I, E, A]
-    ): ZIO[R, Nothing, CompileStatus]                               =
+    ): ZIO[R, Nothing, CompileStatus]                                               =
       flow match {
         case Return(value) => eval(value).to(promise) as CompileStatus.Done
 
@@ -132,7 +132,7 @@ object ZFlowExecutor {
             _          <- ref.update(_.addReadVar(vRef))
           } yield a).to(promise) as CompileStatus.Done
 
-        case fold @ Fold(_, _, _) =>
+        case fold @ Fold(_, _, _, _, _) =>
           //TODO : Clean up required, why not 2 forkDaemons - try and try to reason about this
           for {
             innerPromise <- Promise.make[fold.ValueE, fold.ValueA]
