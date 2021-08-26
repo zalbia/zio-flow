@@ -108,4 +108,40 @@ trim(" a")
 trim(" a   ")
 trim("\tabc   fo\t\t\t\nfoo ")
 
+def indexWhere[A](l: List[A])(p: A => Boolean, from: Int = 0): Int = {
+  def loop(list: List[A], i: Int, acc: Int): Int =
+    list match {
+      case Nil          =>
+        acc
+      case head :: next =>
+        if (p(head)) i else loop(next, i + 1, acc)
+    }
 
+  val index = loop(l.drop(from), 0, -1)
+  if (index == -1) index else index + from
+}
+
+def indexOf[A](l: List[A], a: A, from: Int = 0): Int =
+  indexWhere(l)(a == _, from)
+
+List.empty[Int].indexWhere(_ < 3)
+List(1, 2, 3).indexWhere(_ > 1)
+List(1, 2, 3, 4, 5).indexWhere(_ < 5, 3)
+
+indexWhere(List.empty[Int])(_ < 3)
+indexWhere(List(1, 2, 3))(_ > 1)
+indexWhere(List(1, 2, 3, 4, 5))(_ < 5, 3)
+
+indexOf(List.empty[Int], 3)
+indexOf(List(1, 2, 3), 4)
+indexOf(List(1, 2, 3), 1)
+indexOf(List(1, 2, 3, 4, 5), 5, 0)
+indexOf(List(1, 2, 3, 4, 5), 5, 3)
+indexOf(List(1, 2, 3, 4, 5), 5, 5)
+
+List.empty[Int].indexOf(3)
+List(1, 2, 3).indexOf(4)
+List(1, 2, 3).indexOf(1)
+List(1, 2, 3, 4, 5).indexOf(5, 0)
+List(1, 2, 3, 4, 5).indexOf(5, 3)
+List(1, 2, 3, 4, 5).indexOf(5, 5)
