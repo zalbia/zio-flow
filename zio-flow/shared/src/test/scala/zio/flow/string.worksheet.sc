@@ -145,3 +145,23 @@ List(1, 2, 3).indexOf(1)
 List(1, 2, 3, 4, 5).indexOf(5, 0)
 List(1, 2, 3, 4, 5).indexOf(5, 3)
 List(1, 2, 3, 4, 5).indexOf(5, 5)
+
+def lastIndexWhere[A](l: List[A])(p: A => Boolean, end: Int = l.length - 1): Int = {
+  val lastIndex = indexWhere(l.reverse)(p, l.length - end - 1)
+  if (lastIndex == -1) lastIndex else l.length - lastIndex - 1
+}
+
+def lastIndexOf[A](l: List[A], a: A)(end: Int = l.length - 1): Int =
+  lastIndexWhere(l)(a == _, end)
+
+List.empty[Int].lastIndexOf(3)
+List(1, 2, 3).lastIndexOf(4)
+List(1, 2, 3).lastIndexOf(1)
+List(1, 2, 3, 2, 1).lastIndexOf(1)
+List(5, 4, 5, 4, 3).lastIndexOf(5)
+
+lastIndexOf(List.empty[Int], 3)()
+lastIndexOf(List(1, 2, 3), 4)()
+lastIndexOf(List(1, 2, 3), 1)()
+lastIndexOf(List(1, 2, 3, 2, 1), 1)()
+lastIndexOf(List(5, 4, 5, 4, 3), 5)()
