@@ -163,7 +163,7 @@ class RemoteStringSyntax(self: Remote[String]) {
     ((beginIndex < 0) || (endIndex > length) || (beginIndex > endIndex))
       .ifThenElse(
         None,
-        Remote.Some0(drop(beginIndex).take(length - beginIndex))
+        Remote.Some0(self.slice(beginIndex, beginIndex + endIndex))
       )
 
   def take(n: Remote[Int]): Remote[String] =
