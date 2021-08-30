@@ -1,4 +1,5 @@
 import java.util.Locale
+import scala.util.Try
 
 "abc".substring(0)
 "abc".substring(1)
@@ -190,3 +191,19 @@ padTo("a", -1, '*')
 padTo("a", Int.MinValue, '*')
 padTo("a", 4, '*')
 padTo("a", 5, '*')
+
+def substringOption(s: String, beginIndex: Int)(endIndex: Int = s.length): Option[String] =
+  if ((beginIndex < 0) || (endIndex > s.length) || (beginIndex > endIndex))
+    None
+  else
+    Some(s.slice(beginIndex, beginIndex + endIndex))
+
+Try("food".substring(1))
+Try("food".substring(0, 2))
+Try("".substring(0))
+Try("".substring(1))
+
+substringOption("food", 1)()
+substringOption("food", 0)(2)
+substringOption("", 0)()
+substringOption("", 1)()
