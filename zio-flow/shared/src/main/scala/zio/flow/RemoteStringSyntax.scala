@@ -3,9 +3,12 @@ package zio.flow
 import java.util.Locale
 
 class RemoteStringSyntax(self: Remote[String]) {
-  def +(suffix: Remote[String]): Remote[String] = self.concat(suffix)
 
-  def ++(suffix: Remote[String]): Remote[String] = self.concat(suffix)
+  def *(count: Remote[Int]): Remote[String] = repeat(count)
+
+  def +(suffix: Remote[String]): Remote[String] = concat(suffix)
+
+  def ++(suffix: Remote[String]): Remote[String] = concat(suffix)
 
   def charAtOption(index: Remote[Int]): Remote[Option[Char]] =
     Remote.CharAtOption(self, index)
@@ -29,7 +32,7 @@ class RemoteStringSyntax(self: Remote[String]) {
     toList.containsSlice(substring.toList)
 
   def drop(n: Remote[Int]): Remote[String] =
-    Remote.ListToString(RemoteStringToListChar(self).drop(n))
+    Remote.ListToString(toList.drop(n))
 
   def endsWith(s: Remote[String]): Remote[Boolean] =
     toList.endsWith(s.toList)
@@ -84,6 +87,12 @@ class RemoteStringSyntax(self: Remote[String]) {
   def offsetByCodePoints(index: Remote[Int], codePointOffset: Remote[Int]): Remote[Int] =
     Remote.OffsetByCodePoints(self, index, codePointOffset)
 
+  def padTo(len: Remote[Int], elem: Remote[Char]): Remote[String] =
+    (length >= len).ifThenElse(
+      self,
+      self ++ Remote.ListToString(Remote.fill(len - length, elem))
+    )
+
   def regionMatches(
     toffset: Remote[Int],
     other: Remote[String],
@@ -124,8 +133,13 @@ class RemoteStringSyntax(self: Remote[String]) {
   def replaceAll(regex: Remote[String], replacement: Remote[String]): Remote[String] =
     Remote.ReplaceAll(self, regex, replacement)
 
+  def replaceFirst(regex: Remote[String], replacement: Remote[String]): Remote[String] =
+    Remote.ReplaceFirst(self, regex, replacement)
+
   def reverse: Remote[String] =
     Remote.ListToString(toList.reverse)
+
+  def size: Remote[Int] = length
 
   def slice(from: Remote[Int], until: Remote[Int]): Remote[String] =
     substringOption(from, until).getOrElse("")
@@ -134,7 +148,7 @@ class RemoteStringSyntax(self: Remote[String]) {
     split(ch.escape, 0)
 
   def split(separators: Remote[List[Char]])(implicit d: DummyImplicit): Remote[List[String]] =
-    self.split(separators.fold("[")(_ + _.escape) + "]")
+    split(separators.fold("[")(_ + _.escape) + "]")
 
   def split(regex: Remote[String])(implicit d: DummyImplicit, e: DummyImplicit): Remote[List[String]] =
     split(regex, 0)
@@ -149,7 +163,7 @@ class RemoteStringSyntax(self: Remote[String]) {
     ((beginIndex < 0) || (endIndex > length) || (beginIndex > endIndex))
       .ifThenElse(
         None,
-        Remote.Some0(drop(beginIndex).take(endIndex))
+        Remote.Some0(drop(beginIndex).take(length - beginIndex))
       )
 
   def take(n: Remote[Int]): Remote[String] =
@@ -177,4 +191,7 @@ class RemoteStringSyntax(self: Remote[String]) {
 
   def toUpperCase(locale: Remote[Locale]): Remote[String] =
     Remote.ToUpperCase(self, locale)
+
+  def trim: Remote[String] =
+    slice(self.indexWhere(_ > ' '), self.lastIndexWhere(_ > ' ') + 1)
 }
