@@ -165,3 +165,28 @@ lastIndexOf(List(1, 2, 3), 4)()
 lastIndexOf(List(1, 2, 3), 1)()
 lastIndexOf(List(1, 2, 3, 2, 1), 1)()
 lastIndexOf(List(5, 4, 5, 4, 3), 5)()
+
+def fill[A](size: Int)(elem: A): List[A] = {
+  def loop(size: Int, list: List[A]): List[A] =
+    if (size > 0)
+      elem :: fill(size - 1)(elem)
+    else
+      list
+  loop(size, Nil)
+}
+
+def padTo(s: String, len: Int, elem: Char): String =
+  if (s.length >= len)
+    s
+  else
+    s ++ fill(len - s.length)(elem).mkString
+
+"a".padTo(-1, '*')
+"a".padTo(Int.MinValue, '*')
+"a".padTo(4, '*')
+"a".padTo(5, '*')
+
+padTo("a", -1, '*')
+padTo("a", Int.MinValue, '*')
+padTo("a", 4, '*')
+padTo("a", 5, '*')
