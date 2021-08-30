@@ -250,3 +250,17 @@ patch("foobar", 3, "xxxxxx", 1)
 patch("foobar", 3, "xxxxxx", 6)
 patch("foobar", Int.MaxValue, "xxxxxx", 6)
 patch("foobar", Int.MinValue, "xxx", 6)
+
+def updated(s: String, index: Int, elem: Char): Option[String] =
+  if ((0 <= index) && (index < s.length))
+    Some(patch(s, index, elem.toString, 1))
+  else
+    None
+
+Try("foo".updated(0, 'r'))
+Try("boo".updated(1, 'r'))
+Try("".updated(0, 'a'))
+
+updated("foo", 0, 'r')
+updated("boo", 1, 'r')
+updated("", 0, 'a')
