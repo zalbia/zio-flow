@@ -207,3 +207,46 @@ substringOption("food", 1)()
 substringOption("food", 0)(2)
 substringOption("", 0)()
 substringOption("", 1)()
+
+def patch(s: String, from: Int, other: String, replaced: Int): String = {
+  val actualFrom =
+    if (from < 0)
+      0
+    else if (from > s.length)
+      s.length
+    else
+      from
+  s.take(actualFrom) ++ other ++ s.drop(actualFrom + replaced)
+}
+
+"foobar".patch(Int.MinValue, "x", 0)
+"foobar".patch(0, "x", 0)
+"foobar".patch(0, "x", 2)
+"foobar".patch(0, "xx", 2)
+"foobar".patch(0, "xxx", 2)
+"foobar".patch(1, "xxx", 2)
+"foobar".patch(3, "xxx", 2)
+"foobar".patch(0, "xxx", 1)
+"foobar".patch(0, "xxxxxx", 5)
+"foobar".patch(0, "xxxxxx", 6)
+"foobar".patch(3, "xxxxxx", 0)
+"foobar".patch(3, "xxxxxx", 1)
+"foobar".patch(3, "xxxxxx", 6)
+"foobar".patch(Int.MaxValue, "xxxxxx", 6)
+"foobar".patch(Int.MinValue, "xxx", 6)
+
+patch("foobar", Int.MinValue, "x", 0)
+patch("foobar", 0, "x", 0)
+patch("foobar", 0, "x", 2)
+patch("foobar", 0, "xx", 2)
+patch("foobar", 0, "xxx", 2)
+patch("foobar", 1, "xxx", 2)
+patch("foobar", 3, "xxx", 2)
+patch("foobar", 0, "xxx", 1)
+patch("foobar", 0, "xxxxxx", 5)
+patch("foobar", 0, "xxxxxx", 6)
+patch("foobar", 3, "xxxxxx", 0)
+patch("foobar", 3, "xxxxxx", 1)
+patch("foobar", 3, "xxxxxx", 6)
+patch("foobar", Int.MaxValue, "xxxxxx", 6)
+patch("foobar", Int.MinValue, "xxx", 6)
