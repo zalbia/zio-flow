@@ -264,3 +264,26 @@ Try("".updated(0, 'a'))
 updated("foo", 0, 'r')
 updated("boo", 1, 'r')
 updated("", 0, 'a')
+
+def mkString2(s: String, start: String, sep: String, end: String): String = {
+  val sepChars = sep.toList.reverse
+  start ++ s
+    .foldLeft(List.empty[Char]) { (chars, ch) =>
+      ch :: sepChars ::: chars
+    }
+    .reverse
+    .drop(sep.length)
+    .mkString ++ end
+}
+
+def mkString(s: String, sep: String): String =
+  if (sep.isEmpty || s.length < 2)
+    s
+  else
+    mkString2(s, "", sep, "")
+
+"".mkString("a")
+"foo".mkString("ab")
+
+mkString("", "a")
+mkString("foo", "ab")
