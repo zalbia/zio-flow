@@ -201,6 +201,20 @@ def substringOption(s: String, beginIndex: Int)(endIndex: Int = s.length): Optio
 Try("food".substring(1))
 Try("food".substring(0, 2))
 Try("".substring(0))
+
+Try("foo".updated(0, 'r'))
+Try("boo".updated(1, 'r'))
+Try("".updated(0, 'a'))
+
+updated("foo", 0, 'r')
+updated("boo", 1, 'r')
+updated("", 0, 'a')
+
+def mkString2(s: String, start: String, sep: String, end: String): String = {
+  val sepChars = sep.toList.reverse
+  start ++ s
+    .foldLeft(List.empty[Char]) { (chars, ch) =>
+      ch :: sepChars ::: chars
 Try("".substring(1))
 
 substringOption("food", 1)()
@@ -256,20 +270,6 @@ def updated(s: String, index: Int, elem: Char): Option[String] =
     Some(patch(s, index, elem.toString, 1))
   else
     None
-
-Try("foo".updated(0, 'r'))
-Try("boo".updated(1, 'r'))
-Try("".updated(0, 'a'))
-
-updated("foo", 0, 'r')
-updated("boo", 1, 'r')
-updated("", 0, 'a')
-
-def mkString2(s: String, start: String, sep: String, end: String): String = {
-  val sepChars = sep.toList.reverse
-  start ++ s
-    .foldLeft(List.empty[Char]) { (chars, ch) =>
-      ch :: sepChars ::: chars
     }
     .reverse
     .drop(sep.length)
@@ -287,3 +287,24 @@ def mkString(s: String, sep: String): String =
 
 mkString("", "a")
 mkString("foo", "ab")
+
+implicit class StringOps(s: String) {
+  def charAtOption(i: Int): Option[Char] =
+    Try(s.charAt(i)).toOption
+
+  def updatedOption(i: Int, elem: Char) =
+    Try(s.updated(i, elem)).toOption
+}
+
+def capitalize(self: String): String = {
+  self.charAtOption(0) match {
+    case Some(ch) if ch.isLower =>
+      ch.toUpper +: self.drop(1)
+    case _ =>
+      self
+  }
+}
+
+capitalize("foo")
+capitalize("Foo")
+capitalize("Foo")
