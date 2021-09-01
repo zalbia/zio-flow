@@ -24,6 +24,9 @@ class RemoteStringSyntax(self: Remote[String]) {
   def appendedAll(suffix: Remote[String]): Remote[String] =
     self.concat(suffix)
 
+  def capitalize: Remote[String] =
+    self.charAtOption(0).handleOption(self, _.toUpper +: self.drop(1))
+
   def charAtOption(index: Remote[Int]): Remote[Option[Char]] =
     Remote.CharAtOption(self, index)
 
@@ -97,6 +100,24 @@ class RemoteStringSyntax(self: Remote[String]) {
 
   def matches(regex: Remote[String]): Remote[Boolean] =
     Remote.MatchesRegex(self, regex)
+
+  def mkString(sep: Remote[String]): Remote[String] =
+    (sep.isEmpty || self.length < 2).ifThenElse(
+      self,
+      mkString("", sep, "")
+    )
+
+  def mkString(start: Remote[String], sep: Remote[String], end: Remote[String]): Remote[String] = {
+    val sepChars = sep.toList.reverse
+    start ++ Remote.ListToString(
+      self
+        .fold(List.empty[Char]) { (chars, ch) =>
+          Remote.Cons(sepChars, ch) ++ chars
+        }
+        .reverse
+        .drop(sep.length)
+    ) ++ end
+  }
 
   def offsetByCodePoints(index: Remote[Int], codePointOffset: Remote[Int]): Remote[Int] =
     Remote.OffsetByCodePoints(self, index, codePointOffset)
@@ -184,6 +205,25 @@ class RemoteStringSyntax(self: Remote[String]) {
   def splitAt(n: Int): Remote[(String, String)] =
     Remote.tuple2((take(n), drop(n)))
 
+  def startsWith(prefix: Remote[String]): Remote[Boolean] =
+    toList.startsWith(prefix.toList)
+
+  def stripPrefix(prefix: Remote[String]): Remote[String] =
+    self
+      .startsWith(prefix)
+      .ifThenElse(
+        self.substringOption(prefix.length).getOrElse(self),
+        self
+      )
+
+  def stripSuffix(suffix: Remote[String]): Remote[String] =
+    self
+      .endsWith(suffix)
+      .ifThenElse(
+        self.substringOption(0, self.length - suffix.length).getOrElse(self),
+        self
+      )
+
   def substringOption(beginIndex: Remote[Int], endIndex: Remote[Int] = length): Remote[Option[String]] =
     ((beginIndex < 0) || (endIndex > length) || (beginIndex > endIndex))
       .ifThenElse(
@@ -219,4 +259,10 @@ class RemoteStringSyntax(self: Remote[String]) {
 
   def trim: Remote[String] =
     slice(self.indexWhere(_ > ' '), self.lastIndexWhere(_ > ' ') + 1)
+
+  def updatedOption(index: Remote[Int], elem: Remote[Char]): Remote[Option[String]] =
+    ((Remote(0) <= index) && (index < length)).ifThenElse(
+      Remote.Some0(patch(index, elem.toStringRemote, 1)),
+      None
+    )
 }
